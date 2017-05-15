@@ -1,11 +1,18 @@
 package com.example.javier.photosorter;
 
+import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,10 +22,34 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.Toast;
+
+import java.io.File;
 
 public class actividadPrincipal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private static String logtag = "CameraApp8";
+    private Uri imageUri;
+    private static int TAKE_PICTURE = 1;
+
+    public void iniciarCamara(View v){
+        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+        File photo =  new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"photo.jpg");
+        imageUri = Uri.fromFile(photo);
+
+        intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+
+
+        //startActivityForResult(intent,TAKE_PICTURE);
+
+       startActivity(intent);
+    }
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +58,8 @@ public class actividadPrincipal extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+
         FloatingActionButton camara = (FloatingActionButton) findViewById(R.id.fab);
-        camara.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //cargarCamara();
-            }
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -42,6 +68,9 @@ public class actividadPrincipal extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        camara.setOnClickListener(camaraListener);
     }
     /*
     public void cargarCamara() {
@@ -52,6 +81,14 @@ public class actividadPrincipal extends AppCompatActivity
         startActivity(intent);
     }
     */
+
+    public View.OnClickListener camaraListener = new View.OnClickListener(){
+        public void onClick(View v){
+            iniciarCamara(v);
+        }
+    };
+
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -60,6 +97,33 @@ public class actividadPrincipal extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent){
+        super.onActivityResult(requestCode,resultCode,intent);
+
+        if(resultCode == Activity.RESULT_OK){
+            Uri selectedImage = imageUri;
+            getContentResolver().notifyChange(selectedImage,null);
+
+            ImageView imageView = (ImageView) findViewById(R.id.fab);
+            ContentResolver cr = getContentResolver();
+
+            Bitmap bitmap;
+
+            try{
+                bitmap = MediaStore.Images.Media.getBitmap(cr,selectedImage);
+                imageView.setImageBitmap(bitmap);
+                Toast.makeText(actividadPrincipal.this,selectedImage.toString(),Toast.LENGTH_LONG).show();
+
+            }
+            catch (Exception e){
+                Log.e(logtag,e.toString());
+
+            }
+        }
+
     }
 
     @Override
