@@ -5,10 +5,12 @@ import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
@@ -32,21 +34,28 @@ import java.io.File;
 public class actividadPrincipal extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    public static final String UNABLE_TO_SAVE_PHOTO_FILE = "Unable to save photo file";
     private static String logtag = "CameraApp8";
     private Uri imageUri;
-    private static int TAKE_PICTURE = 1;
+    private static final int TAKE_PICTURE = 0;
+    private File imageFile;
 
     public void iniciarCamara(View v){
-        Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
-        File photo =  new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),"photo.jpg");
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//"android.media.action.ACTION_IMAGE_CAPTURE");
+
+
+        File photo =  new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),("IMG_"+ System.currentTimeMillis()+"_photo.jpg"));
+        imageFile = new File(photo,"passpoints_image");
+
         imageUri = Uri.fromFile(photo);
 
         intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
 
 
-        //startActivityForResult(intent,TAKE_PICTURE);
+        startActivityForResult(intent,TAKE_PICTURE);
 
-       startActivity(intent);
+       //startActivity(intent);
     }
 
 
@@ -84,6 +93,9 @@ public class actividadPrincipal extends AppCompatActivity
 
     public View.OnClickListener camaraListener = new View.OnClickListener(){
         public void onClick(View v){
+
+
+
             iniciarCamara(v);
         }
     };
@@ -103,7 +115,12 @@ public class actividadPrincipal extends AppCompatActivity
     protected void onActivityResult(int requestCode, int resultCode, Intent intent){
         super.onActivityResult(requestCode,resultCode,intent);
 
-        if(resultCode == Activity.RESULT_OK){
+        if(resultCode == Activity.RESULT_OK){             //****VERSION BUENA (Pone una imagen) *****
+            Toast.makeText(actividadPrincipal.this,"Foto almacenada en el directorio 'Pictures'",Toast.LENGTH_LONG).show();
+
+
+
+            /*
             Uri selectedImage = imageUri;
             getContentResolver().notifyChange(selectedImage,null);
 
@@ -114,15 +131,15 @@ public class actividadPrincipal extends AppCompatActivity
 
             try{
                 bitmap = MediaStore.Images.Media.getBitmap(cr,selectedImage);
-                imageView.setImageBitmap(bitmap);
-                Toast.makeText(actividadPrincipal.this,selectedImage.toString(),Toast.LENGTH_LONG).show();
-
+                //imageView.setImageBitmap(bitmap);
+                //Toast.makeText(actividadPrincipal.this,selectedImage.toString(),Toast.LENGTH_LONG).show();
+                Toast.makeText(actividadPrincipal.this,"Foto almacenada en el directorio 'Pictures'",Toast.LENGTH_LONG).show();
             }
             catch (Exception e){
                 Log.e(logtag,e.toString());
 
-            }
-        }
+            }*/
+        }   //   **** Ejemplo de cargar imagen en ImageView *****  */
 
     }
 
