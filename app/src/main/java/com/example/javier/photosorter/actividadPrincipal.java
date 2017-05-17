@@ -40,6 +40,8 @@ public class actividadPrincipal extends AppCompatActivity
     private static final int TAKE_PICTURE = 0;
     private File imageFile;
 
+
+
     public void iniciarCamara(View v){
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//"android.media.action.ACTION_IMAGE_CAPTURE");
@@ -120,25 +122,25 @@ public class actividadPrincipal extends AppCompatActivity
 
 
 
-            /*
+
             Uri selectedImage = imageUri;
             getContentResolver().notifyChange(selectedImage,null);
 
-            ImageView imageView = (ImageView) findViewById(R.id.fab);
+            ImageView imageView = (ImageView) findViewById(R.id.viewPhoto);
             ContentResolver cr = getContentResolver();
 
             Bitmap bitmap;
 
             try{
                 bitmap = MediaStore.Images.Media.getBitmap(cr,selectedImage);
-                //imageView.setImageBitmap(bitmap);
+                imageView.setImageBitmap(bitmap);
                 //Toast.makeText(actividadPrincipal.this,selectedImage.toString(),Toast.LENGTH_LONG).show();
                 Toast.makeText(actividadPrincipal.this,"Foto almacenada en el directorio 'Pictures'",Toast.LENGTH_LONG).show();
             }
             catch (Exception e){
                 Log.e(logtag,e.toString());
 
-            }*/
+            }
         }   //   **** Ejemplo de cargar imagen en ImageView *****  */
 
     }
