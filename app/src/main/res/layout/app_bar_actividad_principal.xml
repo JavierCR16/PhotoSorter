@@ -33,18 +33,7 @@
     <ImageView
         android:id="@+id/viewPhoto"
         android:layout_width="match_parent"
-        android:layout_height="470dp"/>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/floatingActionButton"
-        android:layout_width="87dp"
-        android:layout_height="77dp"
-        android:layout_gravity="bottom|right"
-        android:clickable="true"
-        app:fabSize="mini"
-        app:layout_anchor="@+id/viewPhoto"
-        app:layout_anchorGravity="bottom|left"
-        app:srcCompat="@drawable/ic_menu_gallery" />
+        android:layout_height="237dp"/>
 
     <include
         android:id="@+id/include"
@@ -53,14 +42,47 @@
         android:layout_height="match_parent" />
 
     <Button
-        android:id="@+id/btnAbrir"
+        android:id="@+id/btnPixels"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical|center_horizontal"
-        android:text="Abrir"
+        android:layout_gravity="center_vertical|left"
+        android:text="Pixels"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="center_vertical|right" />
+
+    <Button
+        android:id="@+id/btnLBP"
+        android:layout_width="99dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|right"
         android:onClick="abrirActividad"
+        android:text="Local Binary Patterns"
         app:layout_anchor="@+id/include"
         app:layout_anchorGravity="center_vertical|left" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="87dp"
+        android:layout_height="77dp"
+        android:layout_gravity="top|right"
+        android:clickable="true"
+        app:backgroundTint="@android:color/background_light"
+        app:fabSize="mini"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="bottom|left"
+        app:srcCompat="@drawable/ic_menu_gallery" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton2"
+        android:layout_width="80dp"
+        android:layout_height="79dp"
+        android:layout_gravity="top|center_horizontal"
+        android:clickable="true"
+        app:backgroundTint="@android:color/white"
+        app:fabSize="mini"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="bottom|center_horizontal"
+        app:srcCompat="@mipmap/lbp2" />
 
 
 </android.support.design.widget.CoordinatorLayout>
