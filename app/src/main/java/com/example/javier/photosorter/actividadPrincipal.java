@@ -1,9 +1,11 @@
 package com.example.javier.photosorter;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -13,7 +15,9 @@ import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -31,32 +35,20 @@ import android.widget.Toast;
 
 import java.io.File;
 
-public class actividadPrincipal extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-
+public class actividadPrincipal extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     public static final String UNABLE_TO_SAVE_PHOTO_FILE = "Unable to save photo file";
     private static String logtag = "CameraApp8";
     private Uri imageUri;
     private static final int TAKE_PICTURE = 0;
     private File imageFile;
 
-
-
     public void iniciarCamara(View v){
-
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//"android.media.action.ACTION_IMAGE_CAPTURE");
-
-
         File photo =  new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),("IMG_"+ System.currentTimeMillis()+"_photo.jpg"));
         imageFile = new File(photo,"passpoints_image");
-
         imageUri = Uri.fromFile(photo);
-
         intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
-
-
         startActivityForResult(intent,TAKE_PICTURE);
-
        //startActivity(intent);
     }
 
@@ -65,39 +57,24 @@ public class actividadPrincipal extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED){
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 100);
+        }
         setContentView(R.layout.activity_actividad_principal);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
         FloatingActionButton camara = (FloatingActionButton) findViewById(R.id.fab);
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
         camara.setOnClickListener(camaraListener);
     }
-    /*
-    public void cargarCamara() {
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        EditText editText = (EditText) findViewById(R.id.edit_message);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        startActivity(intent);
-    }
-    */
 
     public View.OnClickListener camaraListener = new View.OnClickListener(){
         public void onClick(View v){
-
-
-
             iniciarCamara(v);
         }
     };
@@ -116,21 +93,13 @@ public class actividadPrincipal extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent){
         super.onActivityResult(requestCode,resultCode,intent);
-
         if(resultCode == Activity.RESULT_OK){             //****VERSION BUENA (Pone una imagen) *****
             Toast.makeText(actividadPrincipal.this,"Foto almacenada en el directorio 'Pictures'",Toast.LENGTH_LONG).show();
-
-
-
-
             Uri selectedImage = imageUri;
             getContentResolver().notifyChange(selectedImage,null);
-
             ImageView imageView = (ImageView) findViewById(R.id.viewPhoto);
             ContentResolver cr = getContentResolver();
-
             Bitmap bitmap;
-
             try{
                 bitmap = MediaStore.Images.Media.getBitmap(cr,selectedImage);
                 imageView.setImageBitmap(bitmap);
