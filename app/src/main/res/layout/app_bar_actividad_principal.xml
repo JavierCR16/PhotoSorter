@@ -30,16 +30,37 @@
         app:backgroundTint="@android:color/background_light"
         app:srcCompat="@drawable/ic_menu_camera" />
 
-    <include
-        android:id="@+id/include"
-        layout="@layout/content_actividad_principal"
-        android:layout_height="match_parent"
-        android:layout_width="match_parent" />
-
     <ImageView
         android:id="@+id/viewPhoto"
         android:layout_width="match_parent"
         android:layout_height="470dp"/>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="87dp"
+        android:layout_height="77dp"
+        android:layout_gravity="bottom|right"
+        android:clickable="true"
+        app:fabSize="mini"
+        app:layout_anchor="@+id/viewPhoto"
+        app:layout_anchorGravity="bottom|left"
+        app:srcCompat="@drawable/ic_menu_gallery" />
+
+    <include
+        android:id="@+id/include"
+        layout="@layout/content_actividad_principal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:id="@+id/btnAbrir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical|center_horizontal"
+        android:text="Abrir"
+        android:onClick="abrirActividad"
+        app:layout_anchor="@+id/include"
+        app:layout_anchorGravity="center_vertical|left" />
 
 
 </android.support.design.widget.CoordinatorLayout>

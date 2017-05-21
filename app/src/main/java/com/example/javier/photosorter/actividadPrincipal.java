@@ -42,6 +42,12 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
     private static final int TAKE_PICTURE = 0;
     private File imageFile;
 
+    public void abrirActividad(View v){
+        Intent i = new Intent(this,Actividad_Expandable.class);
+        startActivity(i);
+    }
+
+
     public void iniciarCamara(View v){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//"android.media.action.ACTION_IMAGE_CAPTURE");
         File photo =  new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES),("IMG_"+ System.currentTimeMillis()+"_photo.jpg"));
@@ -148,25 +154,6 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
         android.app.FragmentManager fragmentManager = getFragmentManager();
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_first_layout) {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame,
-                            new FirstFragment()).commit();
-            // Handle the camera action
-        } else if (id == R.id.nav_second_layout) {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame,
-                            new SecondFragment()).commit();
-        } else if (id == R.id.nav_third_layout) {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_frame,
-                            new ThirdFragment()).commit();
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send){
-
-        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
