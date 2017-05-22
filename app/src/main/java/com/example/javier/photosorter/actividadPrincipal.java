@@ -1,22 +1,28 @@
 package com.example.javier.photosorter;
 
+//Imports sin usar
+import android.app.Fragment;
+import android.graphics.BitmapFactory;
+import android.support.design.widget.Snackbar;
+import android.provider.Settings;
+import android.support.v4.app.FragmentManager;
+import android.widget.Button;
+import android.widget.EditText;
+
+import java.util.ArrayList;
+import java.util.List;
 import android.Manifest;
 import android.app.Activity;
-import android.app.Fragment;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -28,14 +34,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+import java.io.File;
+
+//Imports OpenCV
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.core.Core;
+import org.opencv.core.CvType;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfFloat;
+import org.opencv.core.MatOfInt;
+import org.opencv.core.Scalar;
+import org.opencv.features2d.Features2d;
+import org.opencv.engine.OpenCVEngineInterface;
 
 import org.opencv.android.OpenCVLoader;
-
-import java.io.File;
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+import org.opencv.core.MatOfDMatch;
+import org.opencv.core.MatOfKeyPoint;
+import org.opencv.core.DMatch;
+import org.opencv.features2d.DescriptorExtractor;
+import org.opencv.features2d.DescriptorMatcher;
+import org.opencv.features2d.FeatureDetector;
+import org.opencv.imgproc.Imgproc;
 
 public class actividadPrincipal extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = "MainActivity";
@@ -48,19 +72,27 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
         else
             Log.d(TAG, "OpenCV Loaded");
     }
-
-
     public static final String UNABLE_TO_SAVE_PHOTO_FILE = "Unable to save photo file";
     private static String logtag = "CameraApp8";
     private Uri imageUri;
     private static final int TAKE_PICTURE = 0;
     private File imageFile;
+    //Variables OpenCV
+    private static Bitmap bmp, yourSelectedImage, bmpimg1, bmpimg2;
+    private static Mat img1, img2, descriptors, dupDescriptors;
+    private static FeatureDetector detector;
+    private static DescriptorExtractor DescExtractor;
+    private static DescriptorMatcher matcher;
+    private static MatOfKeyPoint keypoints, dupKeypoints;
+    private static MatOfDMatch matches, matches_final_mat;
+    private static int descriptor = DescriptorExtractor.BRISK;
+    public double distance;
+    public double min_dist = 0.775;
 
     public void abrirActividad(View v){
         Intent i = new Intent(this,Actividad_Expandable.class);
         startActivity(i);
     }
-
 
     public void iniciarCamara(View v){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);//"android.media.action.ACTION_IMAGE_CAPTURE");
@@ -71,8 +103,6 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
         startActivityForResult(intent,TAKE_PICTURE);
        //startActivity(intent);
     }
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +134,6 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
             iniciarCamara(v);
         }
     };
-
 
     @Override
     public void onBackPressed() {
@@ -153,7 +182,6 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
@@ -172,5 +200,55 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    void compare() {
+        try {
+            bmpimg1 = bmpimg1.copy(Bitmap.Config.ARGB_8888, true);
+            bmpimg2 = bmpimg2.copy(Bitmap.Config.ARGB_8888, true);
+            img1 = new Mat();
+            img2 = new Mat();
+            Utils.bitmapToMat(bmpimg1, img1);
+            Utils.bitmapToMat(bmpimg2, img2);
+            Imgproc.cvtColor(img1, img1, Imgproc.COLOR_BGR2RGB);
+            Imgproc.cvtColor(img2, img2, Imgproc.COLOR_BGR2RGB);
+            detector = FeatureDetector.create(FeatureDetector.PYRAMID_FAST);
+            DescExtractor = DescriptorExtractor.create(descriptor);
+            matcher = DescriptorMatcher
+                    .create(DescriptorMatcher.BRUTEFORCE_HAMMING);
+
+            keypoints = new MatOfKeyPoint();
+            dupKeypoints = new MatOfKeyPoint();
+            descriptors = new Mat();
+            dupDescriptors = new Mat();
+            matches = new MatOfDMatch();
+            detector.detect(img1, keypoints);
+            Log.d("LOG!", "number of query Keypoints= " + keypoints.size());
+            detector.detect(img2, dupKeypoints);
+            Log.d("LOG!", "number of dup Keypoints= " + dupKeypoints.size());
+            // Descript keypoints
+            DescExtractor.compute(img1, keypoints, descriptors);
+            DescExtractor.compute(img2, dupKeypoints, dupDescriptors);
+            Log.d("LOG!", "number of descriptors= " + descriptors.size());
+            Log.d("LOG!",
+                    "number of dupDescriptors= " + dupDescriptors.size());
+            // matching descriptors
+            matcher.match(descriptors, dupDescriptors, matches);
+            Log.d("LOG!", "Matches Size " + matches.size());
+            // New method of finding best matches
+            List<DMatch> matchesList = matches.toList();
+            List<DMatch> matches_final = new ArrayList<DMatch>();
+            for (int i = 0; i < matchesList.size(); i++) {
+                if (matchesList.get(i).distance <= min_dist) {
+                    matches_final.add(matches.toList().get(i));
+                }
+            }
+
+            matches_final_mat = new MatOfDMatch();
+            matches_final_mat.fromList(matches_final);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 }
