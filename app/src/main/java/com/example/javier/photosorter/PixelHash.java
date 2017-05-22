@@ -25,11 +25,15 @@ public class PixelHash {
     }
 
     public String comparar(Bitmap imagen){
-        int[] pixels = { };
-        imagen.getPixels(pixels, 0, 256, 0, 0, 256, 256);
+        ArrayList<Integer> caca = new ArrayList();
+        for(int i = 0; i<255; i++){
+            for(int j = 0; j<255; j++){
+                caca.add(imagen.getPixel(i,j));
+            }
+        }
         String x = "";
-        for (int pixel : pixels) {
-            x+=String.valueOf(pixel);
+        for (Integer integer : caca) {
+            x+=integer;
         }
         System.out.println(x);
         return x;
