@@ -33,9 +33,23 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.opencv.android.OpenCVLoader;
+
 import java.io.File;
 
 public class actividadPrincipal extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "MainActivity";
+    static{
+        System.loadLibrary("opencv_java3");
+    }
+    static{
+        if(!OpenCVLoader.initDebug())
+            Log.d(TAG, "OpenCV not Loaded");
+        else
+            Log.d(TAG, "OpenCV Loaded");
+    }
+
+
     public static final String UNABLE_TO_SAVE_PHOTO_FILE = "Unable to save photo file";
     private static String logtag = "CameraApp8";
     private Uri imageUri;
