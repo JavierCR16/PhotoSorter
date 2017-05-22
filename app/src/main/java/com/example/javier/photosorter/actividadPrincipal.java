@@ -2,6 +2,7 @@ package com.example.javier.photosorter;
 
 //Imports sin usar
 import android.app.Fragment;
+import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.design.widget.Snackbar;
 import android.provider.Settings;
@@ -9,6 +10,8 @@ import android.support.v4.app.FragmentManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import android.Manifest;
@@ -77,6 +80,8 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
     private Uri imageUri;
     private static final int TAKE_PICTURE = 0;
     private File imageFile;
+    public PixelHash pixelHash = new PixelHash();
+
     //Variables OpenCV
     private static Bitmap bmp, yourSelectedImage, bmpimg1, bmpimg2;
     private static Mat img1, img2, descriptors, dupDescriptors;
@@ -160,6 +165,8 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
                 imageView.setImageBitmap(bitmap);
                 //Toast.makeText(actividadPrincipal.this,selectedImage.toString(),Toast.LENGTH_LONG).show();
                 Toast.makeText(actividadPrincipal.this,"Foto almacenada en el directorio 'Pictures'",Toast.LENGTH_LONG).show();
+                String cac = pixelHash.comparar(bitmap);
+                generateNoteOnSD(actividadPrincipal.this, "pene.txt", cac);
             }
             catch (Exception e){
                 Log.e(logtag,e.toString());
@@ -167,6 +174,24 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
             }
         }   //   **** Ejemplo de cargar imagen en ImageView *****  */
 
+    }
+
+    public void generateNoteOnSD(Context context, String sFileName, String sBody) {
+        try {
+            File root = new File(Environment.getExternalStorageDirectory(), "Notes");
+            if (!root.exists()) {
+                root.mkdirs();
+            }
+            File gpxfile = new File(root, sFileName);
+            FileWriter writer = new FileWriter(gpxfile);
+            writer.append(sBody);
+            writer.flush();
+            writer.close();
+            Toast.makeText(context, "Saved", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(actividadPrincipal.this,"Archivo no guardado",Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 
     @Override
