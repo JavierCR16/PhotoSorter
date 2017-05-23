@@ -7,6 +7,7 @@ import android.graphics.ColorMatrix;
 import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Paint;
 import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
@@ -25,18 +26,13 @@ public class PixelHash {
     }
 
     public String comparar(Bitmap imagen){
+        imagen = toGrayscale(imagen);
+        imagen = resizeImage(imagen);
         ArrayList<Integer> caca = new ArrayList();
-        for(int i = 0; i<255; i++){
-            for(int j = 0; j<255; j++){
-                caca.add(imagen.getPixel(i,j));
-            }
-        }
-        String x = "";
-        for (Integer integer : caca) {
-            x+=integer;
-        }
-        System.out.println(x);
-        return x;
+        int h = imagen.getHeight();
+        int w = imagen.getWidth();
+        Log.i("Pixel", h+" "+w+"\n");
+        return "Pixel: "+h+" "+w+"\n";
     }
     //TEMPORAL PARA DEBBUG
 

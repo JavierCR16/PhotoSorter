@@ -163,7 +163,6 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
             try{
                 bitmap = MediaStore.Images.Media.getBitmap(cr,selectedImage);
                 imageView.setImageBitmap(bitmap);
-                //Toast.makeText(actividadPrincipal.this,selectedImage.toString(),Toast.LENGTH_LONG).show();
                 Toast.makeText(actividadPrincipal.this,"Foto almacenada en el directorio 'Pictures'",Toast.LENGTH_LONG).show();
                 String cac = pixelHash.comparar(bitmap);
                 generateNoteOnSD(actividadPrincipal.this, "pene.txt", cac);
