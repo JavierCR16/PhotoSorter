@@ -56,6 +56,8 @@ public class actividadPrincipal extends AppCompatActivity implements NavigationV
         intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
         startActivityForResult(intent,TAKE_PICTURE);
        //startActivity(intent);
+
+        System.out.println("Borrar esto");
     }
 
 
